@@ -2,6 +2,6 @@
 {
     public interface IUpdateRepository<T> where T : class
     {
-        void Update(T t);
+        string Update(T item);
     }
 }

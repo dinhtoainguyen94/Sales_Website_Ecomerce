@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Models.RequestModel;
 using Models.ResponseModels;
 using Services;
 using System.ComponentModel.DataAnnotations;
@@ -16,10 +17,34 @@ namespace Client.API.Controllers
             _productService = productService;
         }
 
-        [HttpGet]
+        [HttpGet("/FindProduct/{id}")]
         public ActionResult<ProductResponeModel> Get([Required] int id)
         {
             return Ok(_productService.Get(id));
+        }
+
+        [HttpGet("/GetListProduct")]
+        public ActionResult<ProductResponeModel> GetALL()
+        {
+            return Ok(_productService.GetAll());
+        }
+
+        [HttpPost("/AddProduct")]
+        public ActionResult AddProduct([FromBody] ProductRequestModel product)
+        {
+            return Ok(_productService.Create(product));
+        }
+
+        [HttpPut("/UpdateProduct")]
+        public ActionResult UpdateProduct([FromBody] ProductRequestModel product)
+        {
+            return Ok(_productService.Update(product));
+        }
+
+        [HttpPost("/DeleteProduct")]
+        public ActionResult DeleteProduct([Required] int id)
+        {
+            return Ok(_productService.Delete(id));
         }
     }
 }

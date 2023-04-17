@@ -8,9 +8,9 @@ namespace Services
     {
         IEnumerable<ProductResponeModel> GetAll();
         ProductResponeModel Get(int id);
-        void Create(ProductRequestModel model);
-        void Update(ProductRequestModel model);
-        void Delete(int id);
+        string Create(ProductRequestModel model);
+        string Update(ProductRequestModel model);
+        string Delete(int id);
     }
     public class ProductServices : IProductServices
     {
@@ -20,14 +20,24 @@ namespace Services
         {
             _unitOfWork = unitOfWork;
         }
-        public void Create(ProductRequestModel model)
+        public string Create(ProductRequestModel item)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            using (var context = _unitOfWork.Create())
+            {
+                var result = context.Repositories.ProductRepository.Create(item);
+                return result;
+            }
         }
 
-        public void Delete(int id)
+        public string Delete(int id)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            using (var context = _unitOfWork.Create())
+            {
+                var result = context.Repositories.ProductRepository.Remove(id);
+                return result;
+            }
         }
 
         public ProductResponeModel Get(int id)
@@ -41,12 +51,20 @@ namespace Services
 
         public IEnumerable<ProductResponeModel> GetAll()
         {
-            throw new NotImplementedException();
+            using (var context = _unitOfWork.Create())
+            {
+                var result = context.Repositories.ProductRepository.GetAll();
+                return result;
+            }
         }
 
-        public void Update(ProductRequestModel model)
+        public string Update(ProductRequestModel item)
         {
-            throw new NotImplementedException();
+            using (var context = _unitOfWork.Create())
+            {
+                var result = context.Repositories.ProductRepository.Update(item);
+                return result;
+            }
         }
     }
 }
