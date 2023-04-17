@@ -41,7 +41,7 @@ namespace Client.API.Controllers
             return Ok(_productService.Update(product));
         }
 
-        [HttpPost("/DeleteProduct")]
+        [HttpDelete("/DeleteProduct")]
         public ActionResult DeleteProduct([Required] int id)
         {
             return Ok(_productService.Delete(id));
