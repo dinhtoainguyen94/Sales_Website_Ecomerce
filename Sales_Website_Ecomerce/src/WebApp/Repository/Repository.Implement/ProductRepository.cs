@@ -79,7 +79,8 @@ namespace Repository.Implement
                         Code = reader["Code"].ToString() ?? "",
                         Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]),
                         Price = reader["Price"].ToString() ?? "",
-                        Description = reader["Description"].ToString() ?? ""
+                        Description = reader["Description"].ToString() ?? "",
+                        CategoryName = reader["CategoryName"].ToString() ??""
                     };
                     lstProduct.Add(pro);
                 }
@@ -114,11 +115,11 @@ namespace Repository.Implement
             }
         }
 
-        public string Update(ProductRequestModel item)
+        public string Update(ProductRequestModel item, int productID)
         {
             //throw new NotImplementedException();
             var command = CreateCommand("sp_UpdateProduct");
-            command.Parameters.AddWithValue("@productId", item.ProductID);
+            command.Parameters.AddWithValue("@productId", productID);
             command.Parameters.AddWithValue("@Name", item.Name);
             command.Parameters.AddWithValue("@Code", item.Code);
             command.Parameters.AddWithValue("@Quantity", item.Quantity);

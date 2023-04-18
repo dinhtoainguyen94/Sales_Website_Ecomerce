@@ -36,9 +36,9 @@ namespace Client.API.Controllers
         }
 
         [HttpPut("/UpdateProduct")]
-        public ActionResult UpdateProduct([FromBody] ProductRequestModel product)
+        public ActionResult UpdateProduct([FromBody] ProductRequestModel item, [Required] int productID)
         {
-            return Ok(_productService.Update(product));
+            return Ok(_productService.Update(item, productID));
         }
 
         [HttpDelete("/DeleteProduct")]

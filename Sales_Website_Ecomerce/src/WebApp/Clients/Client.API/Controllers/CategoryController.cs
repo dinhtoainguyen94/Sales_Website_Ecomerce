@@ -24,7 +24,7 @@ namespace Client.API.Controllers
         }
 
         [HttpGet("/GetListCategory")]
-        public ActionResult<ProductResponeModel> GetALL()
+        public ActionResult GetALL()
         {
             return Ok(_categoryService.GetAll());
         }
@@ -36,9 +36,9 @@ namespace Client.API.Controllers
         }
 
         [HttpPut("/UpdateCategory")]
-        public ActionResult UpdateProduct([FromBody] CategoryRequestModel cate)
+        public ActionResult UpdateProduct([FromBody] CategoryRequestModel cate, [Required] int CategoryID)
         {
-            return Ok(_categoryService.Update(cate));
+            return Ok(_categoryService.Update(cate, CategoryID));
         }
 
         [HttpDelete("/DeleteCategory")]

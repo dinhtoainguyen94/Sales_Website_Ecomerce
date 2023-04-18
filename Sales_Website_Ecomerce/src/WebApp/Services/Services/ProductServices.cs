@@ -9,7 +9,7 @@ namespace Services
         IEnumerable<ProductResponeModel> GetAll(int pageIndex);
         ProductResponeModel Get(int id);
         string Create(ProductRequestModel model);
-        string Update(ProductRequestModel model);
+        string Update(ProductRequestModel model, int productID);
         string Delete(int id);
     }
     public class ProductServices : IProductServices
@@ -58,11 +58,11 @@ namespace Services
             }
         }
 
-        public string Update(ProductRequestModel item)
+        public string Update(ProductRequestModel item,int productID )
         {
             using (var context = _unitOfWork.Create())
             {
-                var result = context.Repositories.ProductRepository.Update(item);
+                var result = context.Repositories.ProductRepository.Update(item, productID);
                 return result;
             }
         }

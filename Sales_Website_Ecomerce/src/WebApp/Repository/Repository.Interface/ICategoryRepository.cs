@@ -3,7 +3,7 @@ using Repository.Interfaces.Actions;
 
 namespace Repository.Interface
 {
-    public interface ICategoryRepository : IReadRepository<string, int>, ICreateRepository<CategoryRequestModel>, IUpdateRepository<CategoryRequestModel>, IRemoveRepository<int>
+    public interface ICategoryRepository : IReadRepository<string, int>, ICreateRepository<CategoryRequestModel>, IUpdateRepository<CategoryRequestModel, int>, IRemoveRepository<int>
     {
     }
 }

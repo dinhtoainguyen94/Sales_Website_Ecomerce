@@ -4,8 +4,8 @@ namespace Models.RequestModel
 {
     public class CategoryRequestModel
     {
-        public int CategoryID { get; set; }
+       // public int CategoryID { get; set; }
         [Required]
-        public string Name { get; set; }
+        public string? Name { get; set; }
     }
 }

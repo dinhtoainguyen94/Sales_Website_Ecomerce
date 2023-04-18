@@ -88,11 +88,11 @@ namespace Repository.Implement
             }
         }
 
-        public string Update(CategoryRequestModel item)
+        public string Update(CategoryRequestModel item, int CategoryID)
         {
             //throw new NotImplementedException();
             var command = CreateCommand("sp_UpdateCategory");
-            command.Parameters.AddWithValue("@categoryId", item.CategoryID);
+            command.Parameters.AddWithValue("@categoryId", CategoryID);
             command.Parameters.AddWithValue("@Name", item.Name);
 
             command.CommandType = System.Data.CommandType.StoredProcedure;

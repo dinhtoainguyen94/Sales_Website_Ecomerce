@@ -8,7 +8,7 @@ namespace Services
         List<string> GetAll();
         string Get(int id);
         string Create(CategoryRequestModel model);
-        string Update(CategoryRequestModel model);
+        string Update(CategoryRequestModel model, int CategoryID);
         string Delete(int id);
     }
     public class CategoryServices : ICategoryServices
@@ -57,11 +57,11 @@ namespace Services
             }
         }
 
-        public string Update(CategoryRequestModel item)
+        public string Update(CategoryRequestModel item, int CategoryID)
         {
             using (var context = _unitOfWork.Create())
             {
-                var result = context.Repositories.CategoryRepository.Update(item);
+                var result = context.Repositories.CategoryRepository.Update(item, CategoryID);
                 return result;
             }
         }
