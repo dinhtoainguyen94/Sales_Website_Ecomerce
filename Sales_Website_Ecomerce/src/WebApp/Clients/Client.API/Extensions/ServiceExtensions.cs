@@ -21,6 +21,7 @@ namespace Product.API.Extensions
         {
             services.AddTransient<IUnitOfWork, UnitOfWorkDatabase>();
             services.AddTransient<IProductServices, ProductServices>();
+            services.AddTransient<ICategoryServices, CategoryServices>();
             return services;
         }
     }

@@ -1,14 +1,7 @@
 ﻿using Models.RequestModel;
 using Models.ResponseModels;
 using Repository.Interface;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Repository.Implement
 {
@@ -92,6 +85,11 @@ namespace Repository.Implement
                 }
             };
             return lstProduct;
+        }
+
+        public List<ProductResponeModel> GetAll()
+        {
+            throw new NotImplementedException();
         }
 
         public string Remove(int id)

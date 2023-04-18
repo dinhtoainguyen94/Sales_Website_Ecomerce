@@ -8,10 +8,13 @@ namespace UnitOfWork.Database
     public class UnitOfWorkDatabaseRepository : IUnitOfWorkRepository
     {
         public IProductRepository ProductRepository { get; }
+        public ICategoryRepository CategoryRepository { get; }
+
 
         public UnitOfWorkDatabaseRepository(SqlConnection context, SqlTransaction transaction)
         {          
             ProductRepository = new ProductRepository(context, transaction);
+            CategoryRepository = new CategoryRepository(context, transaction);
         }
     }
 }
