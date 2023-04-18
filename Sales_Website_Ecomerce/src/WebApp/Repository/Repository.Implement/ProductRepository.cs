@@ -45,11 +45,13 @@ namespace Repository.Implement
             command.Parameters.AddWithValue("@productId", id);
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
+            var product = new ProductResponeModel();
+
             using (var reader = command.ExecuteReader())
             {
                 reader.Read();
 
-                return new ProductResponeModel
+                product=  new ProductResponeModel
                 {
                     Name = reader["Name"].ToString() ?? "",
                     Code = reader["Code"].ToString() ?? "",
@@ -58,6 +60,22 @@ namespace Repository.Implement
                     Description = reader["Description"].ToString() ?? ""
                 };
             };
+
+            command = CreateCommand("sp_GetAllCategory");
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            var lstCate = new List<string>();
+
+            Dictionary<int, string> cate = new Dictionary<int, string>();
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    cate.Add(Convert.ToInt32(reader["CategoryId"]), reader["Name"].ToString() ?? "");
+                }
+                product.DictCategory = cate;
+            };
+            return product;
         }
 
         public IEnumerable<ProductResponeModel> GetAll(int pageIndex)
