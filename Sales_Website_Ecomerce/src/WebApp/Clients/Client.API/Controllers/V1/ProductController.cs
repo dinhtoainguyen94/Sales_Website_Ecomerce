@@ -3,10 +3,12 @@ using Models.ResponseModels;
 using Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace Client.API.Controllers
+namespace Client.API.Controllers.V1
 {
-    [Route("api/[controller]")]
+
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class ProductController : ControllerBase
     {
         private readonly IProductServices _productService;
