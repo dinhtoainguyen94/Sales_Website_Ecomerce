@@ -6,7 +6,7 @@ namespace Services
 {
     public interface IProductServices
     {
-        IEnumerable<ProductResponeModel> GetAll();
+        IEnumerable<ProductResponeModel> GetAll(int pageIndex);
         ProductResponeModel Get(int id);
         string Create(ProductRequestModel model);
         string Update(ProductRequestModel model);
@@ -49,11 +49,11 @@ namespace Services
             }
         }
 
-        public IEnumerable<ProductResponeModel> GetAll()
+        public IEnumerable<ProductResponeModel> GetAll(int pageIndex)
         {
             using (var context = _unitOfWork.Create())
             {
-                var result = context.Repositories.ProductRepository.GetAll();
+                var result = context.Repositories.ProductRepository.GetAll(pageIndex);
                 return result;
             }
         }

@@ -4,7 +4,7 @@ namespace Repository.Interfaces.Actions
 {
     public interface IReadRepository<T, Y> where T : class
     {
-        IEnumerable<T> GetAll();
+        IEnumerable<T> GetAll(Y pageIndex);
         T Get(Y id);
     }
 }

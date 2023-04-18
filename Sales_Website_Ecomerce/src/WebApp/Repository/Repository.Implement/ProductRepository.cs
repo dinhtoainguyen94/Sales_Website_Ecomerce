@@ -49,7 +49,7 @@ namespace Repository.Implement
         public ProductResponeModel Get(int id)
         {
             var command = CreateCommand("sp_GetProductById");
-            command.Parameters.AddWithValue("@productId", id);           
+            command.Parameters.AddWithValue("@productId", id);
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             using (var reader = command.ExecuteReader())
@@ -58,18 +58,20 @@ namespace Repository.Implement
 
                 return new ProductResponeModel
                 {
-                    Name = reader["Name"].ToString(),
-                    Code = reader["Code"].ToString(),
-                    Quantity = Convert.ToInt32(reader["Quantity"]),
-                    Price = reader["Price"].ToString(),
-                    Description = reader["Description"].ToString()
+                    Name = reader["Name"].ToString() ?? "",
+                    Code = reader["Code"].ToString() ?? "",
+                    Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]),
+                    Price = reader["Price"].ToString() ?? "",
+                    Description = reader["Description"].ToString() ?? ""
                 };
             };
         }
 
-        public IEnumerable<ProductResponeModel> GetAll()
+        public IEnumerable<ProductResponeModel> GetAll(int pageIndex)
         {
-            var command = CreateCommand("sp_GetAllProduct");
+            var command = CreateCommand("sp_GetPagedData");
+            command.Parameters.AddWithValue("@PageIndex", pageIndex);
+            command.Parameters.AddWithValue("@PageSize", 10);
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             var lstProduct = new List<ProductResponeModel>();
@@ -80,11 +82,11 @@ namespace Repository.Implement
                 {
                     var pro = new ProductResponeModel
                     {
-                        Name = reader["Name"].ToString(),
-                        Code = reader["Code"].ToString(),
-                        Quantity = Convert.ToInt32(reader["Quantity"]),
-                        Price = reader["Price"].ToString(),
-                        Description = reader["Description"].ToString()
+                        Name = reader["Name"].ToString() ?? "",
+                        Code = reader["Code"].ToString() ?? "",
+                        Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]),
+                        Price = reader["Price"].ToString() ?? "",
+                        Description = reader["Description"].ToString() ?? ""
                     };
                     lstProduct.Add(pro);
                 }

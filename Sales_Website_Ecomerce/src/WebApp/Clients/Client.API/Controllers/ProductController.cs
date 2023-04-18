@@ -24,9 +24,9 @@ namespace Client.API.Controllers
         }
 
         [HttpGet("/GetListProduct")]
-        public ActionResult<ProductResponeModel> GetALL()
+        public ActionResult<ProductResponeModel> GetALL([Required] int pageIndex)
         {
-            return Ok(_productService.GetAll());
+            return Ok(_productService.GetAll(pageIndex));
         }
 
         [HttpPost("/AddProduct")]
