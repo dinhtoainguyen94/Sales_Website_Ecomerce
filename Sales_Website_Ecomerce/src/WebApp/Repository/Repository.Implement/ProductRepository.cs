@@ -57,7 +57,8 @@ namespace Repository.Implement
                     Code = reader["Code"].ToString() ?? "",
                     Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]),
                     Price = reader["Price"].ToString() ?? "",
-                    Description = reader["Description"].ToString() ?? ""
+                    Description = reader["Description"].ToString() ?? "",
+                    CategoryName = reader["CategoryName"].ToString() ?? ""
                 };
             };
 
