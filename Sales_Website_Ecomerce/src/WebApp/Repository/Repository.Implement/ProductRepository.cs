@@ -7,13 +7,13 @@ namespace Repository.Implement
 {
     public class ProductRepository : Repository, IProductRepository
     {
-        public ProductRepository(SqlConnection context, SqlTransaction transaction)
+        public ProductRepository(SqlConnection context, SqlTransaction _transaction)
         {
             this._context = context;
-            this._transaction = transaction;
+            this._transaction = _transaction;
         }
 
-        public string Create(ProductRequestModel item)
+        public int Create(ProductRequestModel item)
         {
             //throw new NotImplementedException();
             var command = CreateCommand("sp_InsertProduct");
@@ -22,21 +22,11 @@ namespace Repository.Implement
             command.Parameters.AddWithValue("@Quantity", item.Quantity);
             command.Parameters.AddWithValue("@Price", item.Price);
             command.Parameters.AddWithValue("@Description", item.Description);
+            command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
 
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
-            int rowsAffected = command.ExecuteNonQuery();
-            if (rowsAffected == 0)
-            {
-                Console.WriteLine("Add thất bại");
-                return "Thêm thất bại";
-            }
-            else
-            {
-                _transaction.Commit();
-                Console.WriteLine("Đã Add {0} bản ghi.", rowsAffected);
-                return "Thêm thành công";
-            }
+            return command.ExecuteNonQuery();
         }
 
         public ProductResponeModel Get(int id)
@@ -53,6 +43,7 @@ namespace Repository.Implement
 
                 product=  new ProductResponeModel
                 {
+                    ProductID = reader["Name"].ToString() ?? "",
                     Name = reader["Name"].ToString() ?? "",
                     Code = reader["Code"].ToString() ?? "",
                     Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]),
@@ -79,7 +70,7 @@ namespace Repository.Implement
             return product;
         }
 
-        public IEnumerable<ProductResponeModel> GetAll(int pageIndex)
+        public List<ProductResponeModel> GetAll(int pageIndex)
         {
             var command = CreateCommand("sp_GetPagedData");
             command.Parameters.AddWithValue("@PageIndex", pageIndex);
@@ -112,7 +103,7 @@ namespace Repository.Implement
             throw new NotImplementedException();
         }
 
-        public string Remove(int id)
+        public int Remove(int id)
         {
             //throw new NotImplementedException();
             var command = CreateCommand("sp_DeleteProduct");
@@ -120,21 +111,10 @@ namespace Repository.Implement
 
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
-            int rowsAffected = command.ExecuteNonQuery();
-            if (rowsAffected == 0)
-            {
-                Console.WriteLine("Xóa thất bại");
-                return "Xóa thất bại";
-            }
-            else
-            {
-                _transaction.Commit();
-                Console.WriteLine("Đã Xóa {0} bản ghi.", rowsAffected);
-                return "Xóa thành công";
-            }
+            return command.ExecuteNonQuery();
         }
 
-        public string Update(ProductRequestModel item, int productID)
+        public int Update(ProductRequestModel item, int productID)
         {
             //throw new NotImplementedException();
             var command = CreateCommand("sp_UpdateProduct");
@@ -144,21 +124,11 @@ namespace Repository.Implement
             command.Parameters.AddWithValue("@Quantity", item.Quantity);
             command.Parameters.AddWithValue("@Price", item.Price);
             command.Parameters.AddWithValue("@Description", item.Description);
+            command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
 
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
-            int rowsAffected = command.ExecuteNonQuery();
-            if (rowsAffected == 0)
-            {
-                Console.WriteLine("Update thất bại");
-                return "Sửa thất bại";
-            }
-            else
-            {
-                _transaction.Commit();
-                Console.WriteLine("Đã Uodate {0} bản ghi.", rowsAffected);
-                return "Sửa thành công";
-            }
+            return command.ExecuteNonQuery();
         }
     }
 }

@@ -1,16 +1,16 @@
 ﻿using Models.RequestModel;
-using Models.ResponseModels;
 using UnitOfWork.Interface;
+using Common;
 
 namespace Services
 {
     public interface IProductServices
     {
-        IEnumerable<ProductResponeModel> GetAll(int pageIndex);
-        ProductResponeModel Get(int id);
-        string Create(ProductRequestModel model);
-        string Update(ProductRequestModel model, int productID);
-        string Delete(int id);
+        ResultModel GetAll(int pageIndex);
+        ResultModel Get(int id);
+        ResultModel Create(ProductRequestModel model);
+        ResultModel Update(ProductRequestModel model, int productID);
+        ResultModel Delete(int id);
     }
     public class ProductServices : IProductServices
     {
@@ -20,50 +20,145 @@ namespace Services
         {
             _unitOfWork = unitOfWork;
         }
-        public string Create(ProductRequestModel item)
+        public ResultModel Create(ProductRequestModel item)
+        {
+            try
+            {
+                //throw new NotImplementedException();
+                ResultModel outModel = new ResultModel();
+                using (var context = _unitOfWork.Create())
+                {
+                    var result = context.Repositories.ProductRepository.Create(item);
+                    if (result == 0)
+                    {
+                        outModel.Message = "Thêm thất bại";
+                        outModel.StatusCode = "999";
+                    }
+                    else
+                    {
+                        context.SaveChanges();
+                        outModel.Message = "Thêm thành công";
+                        outModel.StatusCode = "200";
+                    }
+                }
+                return outModel;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public ResultModel Delete(int id)
         {
             //throw new NotImplementedException();
-            using (var context = _unitOfWork.Create())
+            try
             {
-                var result = context.Repositories.ProductRepository.Create(item);
-                return result;
+                ResultModel outModel = new ResultModel();
+                using (var context = _unitOfWork.Create())
+                {
+                    var result = context.Repositories.ProductRepository.Remove(id);
+                    if (result == 0)
+                    {
+                        outModel.Message = "Xóa thất bại";
+                        outModel.StatusCode = "999";
+                    }
+                    else
+                    {
+                        context.SaveChanges();
+                        outModel.Message = "Xóa thành công";
+                        outModel.StatusCode = "200";
+                    }
+                }
+                return outModel;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
-        public string Delete(int id)
+        public ResultModel Get(int id)
         {
-            //throw new NotImplementedException();
-            using (var context = _unitOfWork.Create())
+            try
             {
-                var result = context.Repositories.ProductRepository.Remove(id);
-                return result;
+                ResultModel outModel = new ResultModel();
+                using (var context = _unitOfWork.Create())
+                {
+                    var result = context.Repositories.ProductRepository.Get(id);
+                    if (string.IsNullOrEmpty(result.ProductID))
+                    {
+                        outModel.Message = "Tìm sản phấm thất bại";
+                        outModel.StatusCode = "999";
+                    }
+                    else
+                    {
+                        outModel.Message = "Tìm sản phấm thành công";
+                        outModel.StatusCode = "200";
+                        outModel.DATA = result;
+                    }
+                }
+                return outModel;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
-        public ProductResponeModel Get(int id)
+        public ResultModel GetAll(int pageIndex)
         {
-            using (var context = _unitOfWork.Create())
+            try
             {
-                var result = context.Repositories.ProductRepository.Get(id);
-                return result;
+                ResultModel outModel = new ResultModel();
+                using (var context = _unitOfWork.Create())
+                {
+                    var result = context.Repositories.ProductRepository.GetAll(pageIndex);
+                    if (result.Count == 0)
+                    {
+                        outModel.Message = "Tìm tất cả sản phấm thất bại";
+                        outModel.StatusCode = "999";
+                    }
+                    else
+                    {
+                        outModel.Message = "Tìm tất cả sản phấm thành công";
+                        outModel.StatusCode = "200";
+                        outModel.DATA = result;
+                    }
+                }
+                return outModel;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
-        public IEnumerable<ProductResponeModel> GetAll(int pageIndex)
+        public ResultModel Update(ProductRequestModel item, int productID)
         {
-            using (var context = _unitOfWork.Create())
+            try
             {
-                var result = context.Repositories.ProductRepository.GetAll(pageIndex);
-                return result;
+                ResultModel res = new ResultModel();
+                using (var context = _unitOfWork.Create())
+                {
+                    var result = context.Repositories.ProductRepository.Update(item, productID);
+                    if (result == 0)
+                    {
+                        res.Message = "Sửa thất bại";
+                        res.StatusCode = "999";
+                    }
+                    else
+                    {
+                        context.SaveChanges();
+                        res.Message = "Sửa thành công";
+                        res.StatusCode = "200";
+                    }
+                    return res;
+                }
             }
-        }
-
-        public string Update(ProductRequestModel item,int productID )
-        {
-            using (var context = _unitOfWork.Create())
+            catch (Exception ex)
             {
-                var result = context.Repositories.ProductRepository.Update(item, productID);
-                return result;
+                throw new Exception(ex.Message);
             }
         }
     }
