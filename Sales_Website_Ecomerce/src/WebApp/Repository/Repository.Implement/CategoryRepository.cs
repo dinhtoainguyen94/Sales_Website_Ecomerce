@@ -1,4 +1,5 @@
 ﻿using Models.RequestModel;
+using Models.ResponseModels;
 using Repository.Interface;
 using Repository.Interfaces.Actions;
 using System.Data.SqlClient;
@@ -7,13 +8,13 @@ namespace Repository.Implement
 {
     public class CategoryRepository : Repository, ICategoryRepository
     {
-        public CategoryRepository(SqlConnection context, SqlTransaction transaction)
+        public CategoryRepository(SqlConnection context, SqlTransaction _transaction)
         {
             this._context = context;
-            this._transaction = transaction;
+            this._transaction = _transaction;
         }
 
-        public string Create(CategoryRequestModel item)
+        public int Create(CategoryRequestModel item)
         {
             //throw new NotImplementedException();
             var command = CreateCommand("sp_InsertCategory");
@@ -21,21 +22,10 @@ namespace Repository.Implement
 
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
-            int rowsAffected = command.ExecuteNonQuery();
-            if (rowsAffected == 0)
-            {
-                //Console.WriteLine("Add thất bại");
-                return "Thêm thất bại";
-            }
-            else
-            {
-                _transaction.Commit();
-                //Console.WriteLine("Đã Add {0} bản ghi.", rowsAffected);
-                return "Thêm thành công";
-            }
+            return command.ExecuteNonQuery();
         }
 
-        public string Get(int id)
+        public CategoryResponseModel Get(int id)
         {
             var command = CreateCommand("sp_GetCategoryById");
             command.Parameters.AddWithValue("@categoryId", id);
@@ -44,29 +34,39 @@ namespace Repository.Implement
             using (var reader = command.ExecuteReader())
             {
                 reader.Read();
+                //ResultModel result = new ResultModel();
+                CategoryResponseModel categoryResponseModel = new CategoryResponseModel();
+                categoryResponseModel.Name = reader["Name"].ToString() ?? "";
 
-                return reader["Name"].ToString() ?? "";
+                return categoryResponseModel;
             };
         }
 
-        public List<string> GetAll()
+        public List<CategoryResponseModel> GetAll()
         {
             var command = CreateCommand("sp_GetAllCategory");
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
-            var lstCate = new List<string>();
+            var lstCate = new List<CategoryResponseModel>();
 
             using (var reader = command.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    lstCate.Add(reader["Name"].ToString() ?? "");
+                    CategoryResponseModel categoryResponseModel = new CategoryResponseModel();
+                    categoryResponseModel.Name = reader["Name"].ToString(); 
+                    lstCate.Add(categoryResponseModel);
                 }
             };
             return lstCate;
         }
 
-        public string Remove(int id)
+        public List<CategoryResponseModel> GetAll(int pageIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Remove(int id)
         {
             //throw new NotImplementedException();
             var command = CreateCommand("sp_DeleteCategoryAndProducts");
@@ -74,21 +74,10 @@ namespace Repository.Implement
 
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
-            int rowsAffected = command.ExecuteNonQuery();
-            if (rowsAffected == 0)
-            {
-                Console.WriteLine("Xóa thất bại");
-                return "Xóa thất bại";
-            }
-            else
-            {
-                _transaction.Commit();
-                Console.WriteLine("Đã Xóa {0} bản ghi.", rowsAffected);
-                return "Xóa thành công";
-            }
+            return command.ExecuteNonQuery();
         }
 
-        public string Update(CategoryRequestModel item, int CategoryID)
+        public int Update(CategoryRequestModel item, int CategoryID)
         {
             //throw new NotImplementedException();
             var command = CreateCommand("sp_UpdateCategory");
@@ -97,23 +86,7 @@ namespace Repository.Implement
 
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
-            int rowsAffected = command.ExecuteNonQuery();
-            if (rowsAffected == 0)
-            {
-                Console.WriteLine("Update thất bại");
-                return "Sửa thất bại";
-            }
-            else
-            {
-                _transaction.Commit();
-                Console.WriteLine("Đã Uodate {0} bản ghi.", rowsAffected);
-                return "Sửa thành công";
-            }
-        }
-
-        IEnumerable<string> IReadRepository<string, int>.GetAll(int pageIndex)
-        {
-            throw new NotImplementedException();
+            return command.ExecuteNonQuery();
         }
     }
 }

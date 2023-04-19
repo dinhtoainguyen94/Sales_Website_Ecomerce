@@ -2,6 +2,6 @@
 {
     public interface ICreateRepository<T> where T : class
     {
-        string Create(T item);
+        int Create(T item);
     }
 }

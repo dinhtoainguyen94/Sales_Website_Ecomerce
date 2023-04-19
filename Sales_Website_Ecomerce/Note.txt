@@ -1,0 +1,19 @@
+﻿18/04/23
+
+tìm hiểu  services.AddTransient<IProductServices, ProductServices>(); trong program
+tìm hiểu SaveChanges trong unitofworkdbAdapter
+ghi log
+try - catch
+
+ROLLBACK 
+
+
+task
+- version API
+- xử lý exception common
+- authen - autho (JWT)
+- Log (DB)
+- connect nhiều lần (single)
+- 
+
+cart

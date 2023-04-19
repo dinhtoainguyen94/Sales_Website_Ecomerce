@@ -1,4 +1,6 @@
-﻿namespace Models.RequestModel
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Models.RequestModel
 {
     public class ProductRequestModel
     {
@@ -12,5 +14,7 @@
         public int StatusID { get; set; }
         public DateTime CreateBy { get; set; }
         public DateTime UpdateBy { get; set; }
+        [Required]
+        public int CategoryId { get; set; }
     }
 }
