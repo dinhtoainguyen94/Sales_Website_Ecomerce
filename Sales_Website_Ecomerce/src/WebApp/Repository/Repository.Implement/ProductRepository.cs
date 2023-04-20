@@ -70,7 +70,7 @@ namespace Repository.Implement
             return product;
         }
 
-        public List<ProductResponeModel> Get(int id, int pageIndex)
+        public ProductResponeModel Get(int id, int pageIndex)
         {
             throw new NotImplementedException();
         }

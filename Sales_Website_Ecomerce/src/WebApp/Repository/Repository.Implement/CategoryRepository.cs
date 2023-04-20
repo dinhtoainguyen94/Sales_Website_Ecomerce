@@ -42,7 +42,7 @@ namespace Repository.Implement
             };
         }
 
-        public List<CategoryResponseModel> Get(int id, int pageIndex)
+        public CategoryResponseModel Get(int id, int pageIndex)
         {
             throw new NotImplementedException();
         }

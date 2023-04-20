@@ -8,6 +8,6 @@ namespace Repository.Interfaces.Actions
         List<T> GetAll(Y pageIndex);
         List<T> GetAll();
         T Get(Y id);
-        List<T>Get(Y id, Y pageIndex); //CartProduct
+        T Get(Y id, Y pageIndex); //CartProduct
     }
 }

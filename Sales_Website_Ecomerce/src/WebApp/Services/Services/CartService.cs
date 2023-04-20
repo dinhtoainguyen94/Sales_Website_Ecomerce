@@ -9,7 +9,7 @@ namespace Services
         //ResultModel GetAll(int pageIndex);
         ResultModel Get(int id, int pageIndex);
         ResultModel Create(CartRequestModel model);
-        //ResultModel Update(ProductRequestModel model, int productID);
+        ResultModel Update(CartRequestModel model, int cartID);
         //ResultModel Delete(int id);
     }
     public class CartServices : ICartServices
@@ -87,7 +87,7 @@ namespace Services
                 using (var context = _unitOfWork.Create())
                 {
                     var result = context.Repositories.CartRepository.Get(customerID, pageIndex);
-                    if (result.Count == 0)
+                    if (result.CartID == 0)
                     {
                         outModel.Message = "Tìm giỏ hàng thất bại";
                         outModel.StatusCode = "999";
@@ -135,32 +135,32 @@ namespace Services
         //    }
         //}
 
-        //public ResultModel Update(ProductRequestModel item, int productID)
-        //{
-        //    try
-        //    {
-        //        ResultModel res = new ResultModel();
-        //        using (var context = _unitOfWork.Create())
-        //        {
-        //            var result = context.Repositories.ProductRepository.Update(item, productID);
-        //            if (result == 0)
-        //            {
-        //                res.Message = "Sửa thất bại";
-        //                res.StatusCode = "999";
-        //            }
-        //            else
-        //            {
-        //                context.SaveChanges();
-        //                res.Message = "Sửa thành công";
-        //                res.StatusCode = "200";
-        //            }
-        //            return res;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
+        public ResultModel Update(CartRequestModel item, int cartID)
+        {
+            try
+            {
+                ResultModel res = new ResultModel();
+                using (var context = _unitOfWork.Create())
+                {
+                    var result = context.Repositories.CartRepository.Update(item, cartID);
+                    if (result == 0)
+                    {
+                        res.Message = "Sửa giỏ hàng thất bại";
+                        res.StatusCode = "999";
+                    }
+                    else
+                    {
+                        context.SaveChanges();
+                        res.Message = "Sửa giỏ hàng thành công";
+                        res.StatusCode = "200";
+                    }
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

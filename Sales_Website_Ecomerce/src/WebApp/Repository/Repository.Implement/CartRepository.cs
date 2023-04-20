@@ -34,7 +34,7 @@ namespace Repository.Implement
                 {
                     item.Quantity = oldQuantity + item.Quantity;
                     //1.1 update lại so luong, status
-                    return UpdateCart(item, CartID);
+                    return UpdateCartProduct(item, CartID);
                 }
                 else
                 {
@@ -73,7 +73,7 @@ namespace Repository.Implement
             throw new NotImplementedException();
         }
 
-        private int UpdateCart(CartRequestModel item, int CartID)
+        private int UpdateCartProduct(CartRequestModel item, int CartID)
         {
             SqlCommand command = CreateCommand("sp_UpdateCartProduct");
             command.Parameters.AddWithValue("@CartID", CartID);
@@ -129,21 +129,9 @@ namespace Repository.Implement
         //    return command.ExecuteNonQuery();
         //}
 
-        public int Update(ProductRequestModel item, int productID)
+        public int Update(CartRequestModel item, int CartID)
         {
-            //throw new NotImplementedException();
-            var command = CreateCommand("sp_UpdateProduct");
-            command.Parameters.AddWithValue("@productId", productID);
-            command.Parameters.AddWithValue("@Name", item.Name);
-            command.Parameters.AddWithValue("@Code", item.Code);
-            command.Parameters.AddWithValue("@Quantity", item.Quantity);
-            command.Parameters.AddWithValue("@Price", item.Price);
-            command.Parameters.AddWithValue("@Description", item.Description);
-            command.Parameters.AddWithValue("@CategoryId", item.CategoryId);
-
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-
-            return command.ExecuteNonQuery();
+            return UpdateCartProduct(item, CartID);
         }
 
         CartResponeModel IReadRepository<CartResponeModel, int>.Get(int id)
@@ -151,7 +139,7 @@ namespace Repository.Implement
             throw new NotImplementedException();
         }
 
-        public List<CartResponeModel> Get(int customerID = 0, int pageIndex = 1)
+        public CartResponeModel Get(int customerID = 0, int pageIndex = 1)
         {
             //1 get cartID
             int CartID = GetCartIDByIDCustomer(customerID);
@@ -159,16 +147,21 @@ namespace Repository.Implement
             //2 get CartProduct
             var reader = GetCartProduct(0, CartID);
 
-            List<CartResponeModel> cart = new List<CartResponeModel>();
+            CartResponeModel cart = new CartResponeModel();
+            List<CartModel> lstProduct = new List<CartModel>();
             while (reader.Read())
             {
-                var cartProduct = new CartResponeModel();
-                cartProduct.ProductName = reader["Name"].ToString() ?? "";
-                cartProduct.Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]);
-                cartProduct.QuantityMax = string.IsNullOrEmpty(reader["QuantityMax"].ToString()) ? 0 : Convert.ToInt32(reader["QuantityMax"]);
-                cartProduct.Price = string.IsNullOrEmpty(reader["Price"].ToString()) ? 0 : Convert.ToDecimal(reader["Price"]);
-                cart.Add(cartProduct);
+                var product = new CartModel();
+                product.ProductName = reader["Name"].ToString() ?? "";
+                product.Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]);
+                product.QuantityMax = string.IsNullOrEmpty(reader["QuantityMax"].ToString()) ? 0 : Convert.ToInt32(reader["QuantityMax"]);
+                product.Price = string.IsNullOrEmpty(reader["Price"].ToString()) ? 0 : Convert.ToDecimal(reader["Price"]);
+                product.TotalPrice = product.Quantity * product.Price;
+                lstProduct.Add(product);
             }
+            cart.CartID = CartID;
+            cart.lstProduct = lstProduct;
+
             reader.Close();
 
             return cart;
