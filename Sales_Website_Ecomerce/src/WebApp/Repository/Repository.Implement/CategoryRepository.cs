@@ -82,6 +82,11 @@ namespace Repository.Implement
             return command.ExecuteNonQuery();
         }
 
+        public int Remove(CategoryRequestModel item, int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public int Update(CategoryRequestModel item, int CategoryID)
         {
             //throw new NotImplementedException();

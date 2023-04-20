@@ -4,8 +4,8 @@ namespace Repository.Implement
 {
     public abstract class Repository
     {
-        protected SqlConnection _context;
-        protected SqlTransaction _transaction;
+        protected SqlConnection? _context;
+        protected SqlTransaction? _transaction;
 
         protected SqlCommand CreateCommand(string query)
         {

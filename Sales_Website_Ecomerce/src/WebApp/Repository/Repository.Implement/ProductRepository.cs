@@ -119,6 +119,11 @@ namespace Repository.Implement
             return command.ExecuteNonQuery();
         }
 
+        public int Remove(ProductRequestModel item, int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public int Update(ProductRequestModel item, int productID)
         {
             //throw new NotImplementedException();

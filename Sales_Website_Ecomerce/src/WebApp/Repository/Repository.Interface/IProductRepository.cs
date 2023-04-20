@@ -4,7 +4,7 @@ using Repository.Interfaces.Actions;
 
 namespace Repository.Interface
 {
-    public interface IProductRepository :IReadRepository<ProductResponeModel, int>, ICreateRepository<ProductRequestModel>, IRemoveRepository<int>, IUpdateRepository<ProductRequestModel, int>
+    public interface IProductRepository :IReadRepository<ProductResponeModel, int>, ICreateRepository<ProductRequestModel>, IRemoveRepository<ProductRequestModel,int>, IUpdateRepository<ProductRequestModel, int>
     {
 
     }

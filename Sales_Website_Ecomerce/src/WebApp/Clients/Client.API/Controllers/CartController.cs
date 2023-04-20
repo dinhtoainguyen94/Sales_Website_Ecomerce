@@ -30,21 +30,21 @@ namespace Client.API.Controllers
         //}
 
         [HttpPost("/AddCart")]
-        public ActionResult AddCart([FromBody] CartRequestModel cart)
+        public ActionResult AddCart([FromBody][Required] CartRequestModel cart)
         {
             return Ok(_cartService.Create(cart));
         }
 
         [HttpPut("/UpdateCart")]
-        public ActionResult UpdateCart([FromBody] CartRequestModel item, [Required] int cartID)
+        public ActionResult UpdateCart([FromBody][Required] CartRequestModel item, [Required] int cartID)
         {
             return Ok(_cartService.Update(item, cartID));
         }
 
-        //[HttpDelete("/DeleteProduct")]
-        //public ActionResult DeleteProduct([Required] int id)
-        //{
-        //    return Ok(_productService.Delete(id));
-        //}
+        [HttpDelete("/DeleteCart")]
+        public ActionResult DeleteCart([FromBody][Required] CartRequestModel item, [Required] int cartID)
+        {
+            return Ok(_cartService.Delete(item, cartID));
+        }
     }
 }

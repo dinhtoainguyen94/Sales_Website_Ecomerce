@@ -10,7 +10,7 @@ namespace Services
         ResultModel Get(int id, int pageIndex);
         ResultModel Create(CartRequestModel model);
         ResultModel Update(CartRequestModel model, int cartID);
-        //ResultModel Delete(int id);
+        ResultModel Delete(CartRequestModel model, int cartID);
     }
     public class CartServices : ICartServices
     {
@@ -50,34 +50,34 @@ namespace Services
             }
         }
 
-        //public ResultModel Delete(int id)
-        //{
-        //    //throw new NotImplementedException();
-        //    try
-        //    {
-        //        ResultModel outModel = new ResultModel();
-        //        using (var context = _unitOfWork.Create())
-        //        {
-        //            var result = context.Repositories.ProductRepository.Remove(id);
-        //            if (result == 0)
-        //            {
-        //                outModel.Message = "Xóa thất bại";
-        //                outModel.StatusCode = "999";
-        //            }
-        //            else
-        //            {
-        //                context.SaveChanges();
-        //                outModel.Message = "Xóa thành công";
-        //                outModel.StatusCode = "200";
-        //            }
-        //        }
-        //        return outModel;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
+        public ResultModel Delete(CartRequestModel model, int cartID)
+        {
+            //throw new NotImplementedException();
+            try
+            {
+                ResultModel outModel = new ResultModel();
+                using (var context = _unitOfWork.Create())
+                {
+                    var result = context.Repositories.CartRepository.Remove(model, cartID);
+                    if (result == 0)
+                    {
+                        outModel.Message = "Xóa thất bại";
+                        outModel.StatusCode = "999";
+                    }
+                    else
+                    {
+                        context.SaveChanges();
+                        outModel.Message = "Xóa thành công";
+                        outModel.StatusCode = "200";
+                    }
+                }
+                return outModel;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         public ResultModel Get(int customerID, int pageIndex)
         {

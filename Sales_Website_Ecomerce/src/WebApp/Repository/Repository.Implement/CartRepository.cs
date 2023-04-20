@@ -3,6 +3,7 @@ using Models.ResponseModels;
 using Repository.Interface;
 using Repository.Interfaces.Actions;
 using System.Data.SqlClient;
+using System.Reflection.PortableExecutable;
 
 namespace Repository.Implement
 {
@@ -28,7 +29,6 @@ namespace Repository.Implement
                 int oldQuantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]);
                 bool hasRows = reader.HasRows;
                 reader.Close();
-
 
                 if (hasRows) //Product đã có cart
                 {
@@ -118,16 +118,10 @@ namespace Repository.Implement
             return CartID;
         }
 
-        //public int Remove(int id)
-        //{
-        //    //throw new NotImplementedException();
-        //    var command = CreateCommand("sp_DeleteProduct");
-        //    command.Parameters.AddWithValue("@productId", id);
-
-        //    command.CommandType = System.Data.CommandType.StoredProcedure;
-
-        //    return command.ExecuteNonQuery();
-        //}
+        public int Remove(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         public int Update(CartRequestModel item, int CartID)
         {
@@ -165,6 +159,36 @@ namespace Repository.Implement
             reader.Close();
 
             return cart;
+        }
+
+        public int Remove(CartRequestModel item, int cartID)
+        {
+            item.Quantity = 0;
+            //1. Delete product in CartProduct
+            var command = CreateCommand("sp_DeleteCartProduct");
+            command.Parameters.AddWithValue("@CartID", cartID);
+            command.Parameters.AddWithValue("@ProdutID", item.ProdutID);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+            if (command.ExecuteNonQuery() != 0)
+            {
+                //2. Check Cart con product khong
+                SqlDataReader reader = GetCartProduct(0, cartID);
+                bool hasRows = reader.HasRows;
+                reader.Close();
+                if (hasRows) //con product trong cart
+                {
+                    return 1;
+                }
+                //3. Remove Cart (khong con product trong cart)
+                else
+                {
+                    command = CreateCommand("sp_DeleteCart");
+                    command.Parameters.AddWithValue("@CartID", cartID);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    return command.ExecuteNonQuery();
+                }
+            }
+            return 0;
         }
     }
 }
