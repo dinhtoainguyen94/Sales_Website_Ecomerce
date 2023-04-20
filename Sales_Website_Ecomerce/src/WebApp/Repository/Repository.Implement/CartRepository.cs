@@ -19,15 +19,14 @@ namespace Repository.Implement
         {
             //throw new NotImplementedException();
             int CartID = GetCartIDByIDCustomer(item.CustomerID);
-            SqlDataReader reader;
             if (CartID != 0) //Customer đã có cart
             {
                 //1.Check Product đã có trong Cart_Product
-                reader = GetCartProduct(item.ProdutID, CartID);
+                var reader = GetCartProduct(item.ProdutID, CartID);
 
                 reader.Read();
-                int oldQuantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]);
                 bool hasRows = reader.HasRows;
+                int oldQuantity = hasRows ? string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]) : 0;
                 reader.Close();
 
                 if (hasRows) //Product đã có cart
@@ -112,7 +111,8 @@ namespace Repository.Implement
             var reader = command.ExecuteReader();
 
             reader.Read();
-            int CartID = string.IsNullOrEmpty(reader["CartID"].ToString()) ? 0 : Convert.ToInt32(reader["CartID"]);
+            int CartID = reader.HasRows ? string.IsNullOrEmpty(reader["CartID"].ToString()) ? 0 : Convert.ToInt32(reader["CartID"]) : 0;
+
             reader.Close();
 
             return CartID;
