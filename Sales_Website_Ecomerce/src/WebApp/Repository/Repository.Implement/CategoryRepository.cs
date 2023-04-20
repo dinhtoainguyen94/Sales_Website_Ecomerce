@@ -42,6 +42,11 @@ namespace Repository.Implement
             };
         }
 
+        public List<CategoryResponseModel> Get(int id, int pageIndex)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<CategoryResponseModel> GetAll()
         {
             var command = CreateCommand("sp_GetAllCategory");

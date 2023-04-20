@@ -1,9 +1,8 @@
 ﻿using Models.RequestModel;
 using Models.ResponseModels;
 using Repository.Interface;
-using System.Data;
+using Repository.Interfaces.Actions;
 using System.Data.SqlClient;
-using System.Reflection.PortableExecutable;
 
 namespace Repository.Implement
 {
@@ -18,23 +17,12 @@ namespace Repository.Implement
         public int Create(CartRequestModel item)
         {
             //throw new NotImplementedException();
-            var command = CreateCommand("sp_GetCartByIDCustomer");
-            command.Parameters.AddWithValue("@CustomerID", item.CustomerID);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-            var reader = command.ExecuteReader();
-
-            if (reader.HasRows) //Customer đã có cart
+            int CartID = GetCartIDByIDCustomer(item.CustomerID);
+            SqlDataReader reader;
+            if (CartID != 0) //Customer đã có cart
             {
-                reader.Read();
-                int CartID = string.IsNullOrEmpty(reader["CartID"].ToString()) ? 0 : Convert.ToInt32(reader["CartID"]);
-                reader.Close();
-
-                //1.Check Product đã có trong Cart_Product (thữ hiện update)
-                command = CreateCommand("sp_GetCartProduct");
-                command.Parameters.AddWithValue("@CartID", CartID);
-                command.Parameters.AddWithValue("@ProductID", item.ProdutID);
-                command.CommandType = System.Data.CommandType.StoredProcedure;
-                reader = command.ExecuteReader();
+                //1.Check Product đã có trong Cart_Product
+                reader = GetCartProduct(item.ProdutID, CartID);
 
                 reader.Read();
                 int oldQuantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]);
@@ -46,18 +34,17 @@ namespace Repository.Implement
                 {
                     item.Quantity = oldQuantity + item.Quantity;
                     //1.1 update lại so luong, status
-                    return UpdateCart(command, item, CartID);
+                    return UpdateCart(item, CartID);
                 }
                 else
                 {
                     //2.Add Cart_Product
-                    return InsertCartProduct(command, item, CartID);
+                    return InsertCartProduct(item, CartID);
                 }
             }
             else //Customer chưa có cart
             {
-                reader.Close();
-                command = CreateCommand("sp_InsertCart");
+                SqlCommand command = CreateCommand("sp_InsertCart");
                 command.Parameters.AddWithValue("@CustomerID", item.CustomerID);
                 command.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -65,17 +52,10 @@ namespace Repository.Implement
                 {
                     #region Process cart_product
                     //1. Get CartID
-                    command = CreateCommand("sp_GetCartByIDCustomer");
-                    command.Parameters.AddWithValue("@CustomerID", item.CustomerID);
-                    command.CommandType = System.Data.CommandType.StoredProcedure;
-                    reader = command.ExecuteReader();
+                    CartID = GetCartIDByIDCustomer(item.CustomerID);
 
-                    reader.Read();
-                    int CartID = string.IsNullOrEmpty(reader["CartID"].ToString()) ? 0 : Convert.ToInt32(reader["CartID"]);
-                    reader.Close();
-                    
                     //2. Add Cart_Product
-                    return InsertCartProduct(command, item, CartID);
+                    return InsertCartProduct(item, CartID);
 
                     #endregion
                 }
@@ -83,73 +63,9 @@ namespace Repository.Implement
             return 0;
         }
 
-        public CartResponeModel Get(int id)
-        {
-            var command = CreateCommand("sp_GetProductById");
-            command.Parameters.AddWithValue("@productId", id);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-
-            var product = new ProductResponeModel();
-
-            using (var reader = command.ExecuteReader())
-            {
-                reader.Read();
-
-                product = new ProductResponeModel
-                {
-                    ProductID = reader["Name"].ToString() ?? "",
-                    Name = reader["Name"].ToString() ?? "",
-                    Code = reader["Code"].ToString() ?? "",
-                    Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]),
-                    Price = reader["Price"].ToString() ?? "",
-                    Description = reader["Description"].ToString() ?? "",
-                    CategoryName = reader["CategoryName"].ToString() ?? ""
-                };
-            };
-
-            command = CreateCommand("sp_GetAllCategory");
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-
-            var lstCate = new List<string>();
-
-            Dictionary<int, string> cate = new Dictionary<int, string>();
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    cate.Add(Convert.ToInt32(reader["CategoryId"]), reader["Name"].ToString() ?? "");
-                }
-                product.DictCategory = cate;
-            };
-            return new CartResponeModel();
-        }
-
         public List<CartResponeModel> GetAll(int pageIndex)
         {
-            var command = CreateCommand("sp_GetPagedData");
-            command.Parameters.AddWithValue("@PageIndex", pageIndex);
-            command.Parameters.AddWithValue("@PageSize", 10);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-
-            var lstProduct = new List<ProductResponeModel>();
-
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    var pro = new ProductResponeModel
-                    {
-                        Name = reader["Name"].ToString() ?? "",
-                        Code = reader["Code"].ToString() ?? "",
-                        Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]),
-                        Price = reader["Price"].ToString() ?? "",
-                        Description = reader["Description"].ToString() ?? "",
-                        CategoryName = reader["CategoryName"].ToString() ?? ""
-                    };
-                    lstProduct.Add(pro);
-                }
-            };
-            return new List<CartResponeModel>();
+            throw new NotImplementedException();
         }
 
         public List<CartResponeModel> GetAll()
@@ -157,9 +73,9 @@ namespace Repository.Implement
             throw new NotImplementedException();
         }
 
-        private int UpdateCart(SqlCommand command, CartRequestModel item, int CartID)
+        private int UpdateCart(CartRequestModel item, int CartID)
         {
-            command = CreateCommand("sp_UpdateCartProduct");
+            SqlCommand command = CreateCommand("sp_UpdateCartProduct");
             command.Parameters.AddWithValue("@CartID", CartID);
             command.Parameters.AddWithValue("@ProdutID", item.ProdutID);
             command.Parameters.AddWithValue("@Quantity", item.Quantity);
@@ -168,15 +84,38 @@ namespace Repository.Implement
             return command.ExecuteNonQuery();
         }
 
-        private int InsertCartProduct(SqlCommand command, CartRequestModel item, int CartID)
+        private int InsertCartProduct(CartRequestModel item, int CartID)
         {
-            command = CreateCommand("sp_InsertCartProduct");
+            SqlCommand command = CreateCommand("sp_InsertCartProduct");
             command.Parameters.AddWithValue("@CartID", CartID);
             command.Parameters.AddWithValue("@ProdutID", item.ProdutID);
             command.Parameters.AddWithValue("@Quantity", item.Quantity);
             command.Parameters.AddWithValue("@StatusID", item.StatusID);
             command.CommandType = System.Data.CommandType.StoredProcedure;
             return command.ExecuteNonQuery();
+        }
+
+        private SqlDataReader GetCartProduct(int produtID, int CartID)
+        {
+            SqlCommand command = CreateCommand("sp_GetCartProduct");
+            command.Parameters.AddWithValue("@CartID", CartID);
+            command.Parameters.AddWithValue("@ProductID", produtID);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+            return command.ExecuteReader();
+        }
+
+        private int GetCartIDByIDCustomer(int customerID)
+        {
+            SqlCommand command = CreateCommand("sp_GetCartByIDCustomer");
+            command.Parameters.AddWithValue("@CustomerID", customerID);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+            var reader = command.ExecuteReader();
+
+            reader.Read();
+            int CartID = string.IsNullOrEmpty(reader["CartID"].ToString()) ? 0 : Convert.ToInt32(reader["CartID"]);
+            reader.Close();
+
+            return CartID;
         }
 
         //public int Remove(int id)
@@ -205,6 +144,34 @@ namespace Repository.Implement
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             return command.ExecuteNonQuery();
+        }
+
+        CartResponeModel IReadRepository<CartResponeModel, int>.Get(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<CartResponeModel> Get(int customerID = 0, int pageIndex = 1)
+        {
+            //1 get cartID
+            int CartID = GetCartIDByIDCustomer(customerID);
+
+            //2 get CartProduct
+            var reader = GetCartProduct(0, CartID);
+
+            List<CartResponeModel> cart = new List<CartResponeModel>();
+            while (reader.Read())
+            {
+                var cartProduct = new CartResponeModel();
+                cartProduct.ProductName = reader["Name"].ToString() ?? "";
+                cartProduct.Quantity = string.IsNullOrEmpty(reader["Quantity"].ToString()) ? 0 : Convert.ToInt32(reader["Quantity"]);
+                cartProduct.QuantityMax = string.IsNullOrEmpty(reader["QuantityMax"].ToString()) ? 0 : Convert.ToInt32(reader["QuantityMax"]);
+                cartProduct.Price = string.IsNullOrEmpty(reader["Price"].ToString()) ? 0 : Convert.ToDecimal(reader["Price"]);
+                cart.Add(cartProduct);
+            }
+            reader.Close();
+
+            return cart;
         }
     }
 }

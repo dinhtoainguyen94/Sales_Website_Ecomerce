@@ -70,6 +70,11 @@ namespace Repository.Implement
             return product;
         }
 
+        public List<ProductResponeModel> Get(int id, int pageIndex)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<ProductResponeModel> GetAll(int pageIndex)
         {
             var command = CreateCommand("sp_GetPagedData");

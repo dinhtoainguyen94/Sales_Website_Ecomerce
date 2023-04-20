@@ -7,7 +7,7 @@ namespace Services
     public interface ICartServices
     {
         //ResultModel GetAll(int pageIndex);
-        ResultModel Get(int id);
+        ResultModel Get(int id, int pageIndex);
         ResultModel Create(CartRequestModel model);
         //ResultModel Update(ProductRequestModel model, int productID);
         //ResultModel Delete(int id);
@@ -79,22 +79,22 @@ namespace Services
         //    }
         //}
 
-        public ResultModel Get(int id)
+        public ResultModel Get(int customerID, int pageIndex)
         {
             try
             {
                 ResultModel outModel = new ResultModel();
                 using (var context = _unitOfWork.Create())
                 {
-                    var result = context.Repositories.ProductRepository.Get(id);
-                    if (string.IsNullOrEmpty(result.ProductID))
+                    var result = context.Repositories.CartRepository.Get(customerID, pageIndex);
+                    if (result.Count == 0)
                     {
-                        outModel.Message = "Tìm sản phấm thất bại";
+                        outModel.Message = "Tìm giỏ hàng thất bại";
                         outModel.StatusCode = "999";
                     }
                     else
                     {
-                        outModel.Message = "Tìm sản phấm thành công";
+                        outModel.Message = "Tìm giỏ hàng thành công";
                         outModel.StatusCode = "200";
                         outModel.DATA = result;
                     }
