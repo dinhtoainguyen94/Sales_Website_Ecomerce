@@ -6,5 +6,6 @@ namespace UnitOfWork.Interface
     {
         IProductRepository ProductRepository { get; }
         ICategoryRepository CategoryRepository { get; }
+        ICartRepository CartRepository { get; }
     }
 }

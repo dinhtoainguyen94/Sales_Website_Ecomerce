@@ -9,12 +9,13 @@ namespace UnitOfWork.Database
     {
         public IProductRepository ProductRepository { get; }
         public ICategoryRepository CategoryRepository { get; }
-
+        public ICartRepository CartRepository { get; }
 
         public UnitOfWorkDatabaseRepository(SqlConnection context, SqlTransaction transaction)
         {          
             ProductRepository = new ProductRepository(context, transaction);
             CategoryRepository = new CategoryRepository(context, transaction);
+            CartRepository = new CartRepository(context, transaction);
         }
     }
 }

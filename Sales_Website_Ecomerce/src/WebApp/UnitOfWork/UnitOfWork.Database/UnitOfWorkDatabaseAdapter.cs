@@ -38,5 +38,10 @@ namespace UnitOfWork.Database
         {
             _transaction.Commit();
         }
+
+        public void DeleteChanges()
+        {
+            _transaction.Rollback();
+        }
     }
 }
